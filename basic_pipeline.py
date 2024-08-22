@@ -1,4 +1,7 @@
 import os
+# Update the place where models are dumped for storage space control
+os.environ['HF_HOME'] = os.path.join(os.getcwd(), "hf_home")
+
 from transformers import pipeline
 
 
