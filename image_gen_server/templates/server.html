@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <input type="text" name="prompt" placeholder="Enter prompt">
+        <input type="button" value="Submit" onclick="submit()">
+    </div>
+    <div style="padding-top: 1em;">
+        <img id="prompt_img">
+    </div>
+</body>
+<script>
+    function submit() {
+        // Change image URL to loder
+        document.querySelector("#prompt_img").src = "/static/FhHRx.gif";
+        console.log(document.querySelector("input[name='prompt']").value);
+        fetch("/gen_image", {
+            'method': 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            'body': JSON.stringify({'prompt': document.querySelector("input[name='prompt']").value})
+        })
+        .then(response => response.text())
+        .then(text => document.querySelector("#prompt_img").src = text)
+    }
+</script>
+</html>
