@@ -13,12 +13,15 @@
     <div style="padding-top: 1em;">
         <img id="prompt_img">
     </div>
+    <div style="padding-top: 1em;" id="total_time"></div>
 </body>
 <script>
     function submit() {
         // Change image URL to loder
         document.querySelector("#prompt_img").src = "/static/FhHRx.gif";
-        console.log(document.querySelector("input[name='prompt']").value);
+        document.getElementById('total_time').innerHTML = ""
+        // Get generated image
+        const start_time = new Date();
         fetch("/gen_image", {
             'method': 'POST',
             headers: {
@@ -28,7 +31,10 @@
             'body': JSON.stringify({'prompt': document.querySelector("input[name='prompt']").value})
         })
         .then(response => response.text())
-        .then(text => document.querySelector("#prompt_img").src = text)
+        .then(text => {
+            document.querySelector("#prompt_img").src = text;
+            document.getElementById('total_time').innerHTML = `Total time: ${(new Date() - start_time)/1000} seconds`;
+        });
     }
 </script>
 </html>
