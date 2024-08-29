@@ -1,15 +1,19 @@
 from flask import Flask, render_template, request
 from uuid import uuid4
 
+
 #################################################
 import os
 # Update the place where models are dumped for storage space control
 os.environ['HF_HOME'] = os.path.join(os.getcwd(), "../hf_home")
 
-from diffusers import DiffusionPipeline
+from diffusers import AmusedPipeline
 import torch
 
-pipeline = DiffusionPipeline.from_pretrained("amused/amused-512").to("cuda")
+pipeline = AmusedPipeline.from_pretrained("amused/amused-256", variant="fp16", torch_dtype=torch.float16)
+pipeline.vqvae.to(torch.float32)  # vqvae is producing nans n fp16
+pipeline = pipeline.to("cuda")
+
 def textToImage(prompt):
     image = pipeline(prompt, generator=torch.Generator('cuda').manual_seed(8)).images[0]
     return image
