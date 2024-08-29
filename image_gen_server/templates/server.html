@@ -16,6 +16,11 @@
     <div style="padding-top: 1em;" id="total_time"></div>
 </body>
 <script>
+    const BENCHMARK_CONFIG = {
+        'size': 2,
+        'data': []
+    }
+
     function submit() {
         // Change image URL to loder
         document.querySelector("#prompt_img").src = "/static/FhHRx.gif";
@@ -33,8 +38,32 @@
         .then(response => response.text())
         .then(text => {
             document.querySelector("#prompt_img").src = text;
-            document.getElementById('total_time').innerHTML = `Total time: ${(new Date() - start_time)/1000} seconds`;
+            const duration = (new Date() - start_time)/1000;
+            document.getElementById('total_time').innerHTML = `Total time: ${duration} seconds`;
+            BENCHMARK_CONFIG.data.push(duration)
         });
+    }
+
+    function benchmark() {
+        // Define fuction to monitor
+        function monitor(max_size) {
+            console.log("Monitoring...");
+            if (BENCHMARK_CONFIG.data.length < max_size) {
+                setTimeout(() => {
+                    monitor(max_size);
+                }, 1000)
+            } else {
+                console.log(BENCHMARK_CONFIG.data);
+                console.log('Average:', BENCHMARK_CONFIG.data.reduce((a, b) => a+b, 0)/BENCHMARK_CONFIG.data.length);
+            }
+        }
+
+        // Rest old data in config for fresh benchmarking
+        BENCHMARK_CONFIG.data = [];
+        for(let i=0; i < BENCHMARK_CONFIG.size; i++) {
+            submit();
+        }
+        monitor(BENCHMARK_CONFIG.size);
     }
 </script>
 </html>
