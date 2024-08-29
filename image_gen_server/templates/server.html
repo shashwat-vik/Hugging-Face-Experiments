@@ -8,7 +8,7 @@
 <body>
     <div>
         <input type="text" name="prompt" placeholder="Enter prompt">
-        <input type="button" value="Submit" onclick="submit()">
+        <input type="button" value="Submit" onclick="submitTextToGetImage()">
     </div>
     <div style="padding-top: 1em;">
         <img id="prompt_img">
@@ -21,13 +21,13 @@
         'data': []
     }
 
-    function submit() {
+    function submitTextToGetImage() {
         // Change image URL to loder
         document.querySelector("#prompt_img").src = "/static/FhHRx.gif";
         document.getElementById('total_time').innerHTML = ""
         // Get generated image
         const start_time = new Date();
-        fetch("/gen_image", {
+        return fetch("/gen_image", {
             'method': 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -44,7 +44,7 @@
         });
     }
 
-    function benchmark() {
+    async function benchmark(size=2, do_serially=false) {
         // Define fuction to monitor
         function monitor(max_size) {
             console.log("Monitoring...");
@@ -58,12 +58,21 @@
             }
         }
 
-        // Rest old data in config for fresh benchmarking
+        // Reset old data in config for fresh benchmarking
+        BENCHMARK_CONFIG.size = size;
         BENCHMARK_CONFIG.data = [];
-        for(let i=0; i < BENCHMARK_CONFIG.size; i++) {
-            submit();
-        }
+
+        // Start network request monitor
         monitor(BENCHMARK_CONFIG.size);
+
+        // Send requests for benchmarking
+        for(let i = 0; i < BENCHMARK_CONFIG.size; i++) {
+            if (do_serially) {
+                await submitTextToGetImage();
+            } else {
+                submitTextToGetImage();
+            }
+        }
     }
 </script>
 </html>
